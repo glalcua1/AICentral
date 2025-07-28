@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, Filter, Star, Eye, Heart, ExternalLink, ChevronRight, User, Calendar, Target, Zap, Code, TrendingUp } from 'lucide-react'
+import { Search, Filter, Star, Eye, Heart, ExternalLink, ChevronRight, User, Calendar, Target, Zap, TrendingUp } from 'lucide-react'
 import Header from '@/components/Header'
 import { getApprovedProjects, getFeaturedProjects } from '@/lib/projects'
 import { formatDate } from '@/lib/utils'
@@ -56,22 +56,33 @@ export default function ProjectsPage() {
       <Header />
       
       {/* Hero Section */}
-      <section className="section-lg bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white relative overflow-hidden pt-32">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-          }} />
-        </div>
+      <section className="section-lg text-white relative overflow-hidden pt-32" style={{
+        backgroundImage: 'url("/digital-art-inmersive-exhibition.jpg")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}>
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-black/60" />
         
-        <div className="container-custom relative">
+        {/* Subtle neutral gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-transparent to-black/50" />
+        
+        <div className="container-custom relative z-10">
           <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center space-x-2 glass-card mb-8">
+            <div className="inline-flex items-center space-x-2 glass-card mb-8 backdrop-blur-md bg-black/20 border border-white/20">
               <Zap className="w-4 h-4 text-yellow-400" />
-              <span className="text-sm font-medium">Innovation Showcase</span>
+              <span className="text-sm font-medium text-white" style={{
+                textShadow: '1px 1px 3px rgba(0,0,0,0.8), 0 0 6px rgba(0,0,0,0.6)'
+              }}>Innovation Showcase</span>
             </div>
             
-            <h1 className="heading-1 mb-6">AI Projects Gallery</h1>
-            <p className="text-hero mb-8 text-gray-200">
+            <h1 className="heading-1 mb-6 text-white" style={{
+              textShadow: '3px 3px 12px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.8), 1px 1px 3px rgba(0,0,0,1)'
+            }}>AI Projects Gallery</h1>
+            <p className="text-hero mb-8 text-white" style={{
+              textShadow: '2px 2px 8px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.7), 1px 1px 2px rgba(0,0,0,1)'
+            }}>
               Explore innovative AI projects created by our community. Get inspired and discover cutting-edge solutions.
             </p>
 
@@ -83,12 +94,18 @@ export default function ProjectsPage() {
                 { label: 'Total Views', value: approvedProjects.reduce((sum, p) => sum + (p.views || 0), 0), icon: Eye },
                 { label: 'Total Likes', value: approvedProjects.reduce((sum, p) => sum + (p.likes || 0), 0), icon: Heart },
               ].map((stat, index) => (
-                <div key={index} className="glass-card text-center p-4">
+                <div key={index} className="glass-card text-center p-4 backdrop-blur-md bg-black/20 border border-white/10">
                   <div className="flex justify-center mb-2">
-                    <stat.icon className="w-6 h-6" />
+                    <stat.icon className="w-6 h-6 text-white" style={{
+                      filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.8))'
+                    }} />
                   </div>
-                  <div className="text-2xl font-bold">{stat.value}</div>
-                  <div className="text-sm text-gray-200">{stat.label}</div>
+                  <div className="text-2xl font-bold text-white" style={{
+                    textShadow: '2px 2px 6px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7)'
+                  }}>{stat.value}</div>
+                  <div className="text-sm text-white" style={{
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.8), 0 0 4px rgba(0,0,0,0.6)'
+                  }}>{stat.label}</div>
                 </div>
               ))}
             </div>

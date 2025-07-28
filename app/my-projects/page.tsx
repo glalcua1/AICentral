@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Clock, CheckCircle, XCircle, Eye, Heart, ExternalLink, MessageSquare, Edit3, Trash2, AlertCircle } from 'lucide-react'
+import { Clock, CheckCircle, XCircle, Eye, Heart, ExternalLink, Edit3, Trash2, AlertCircle } from 'lucide-react'
 import Header from '@/components/Header'
 import { projects, Project } from '@/lib/projects'
 import { formatDate } from '@/lib/utils'

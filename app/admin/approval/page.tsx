@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Clock, CheckCircle, XCircle, Eye, ExternalLink, MessageSquare, User, Calendar, DollarSign, Code, Target, Users, Lightbulb } from 'lucide-react'
+import { Clock, CheckCircle, XCircle, Eye, ExternalLink, MessageSquare, User, Calendar, DollarSign, Code, Target, Users, Lightbulb, TrendingUp } from 'lucide-react'
 import Header from '@/components/Header'
-import { projects, Project, getProjectsByStatus } from '@/lib/projects'
+import { Project, getProjectsByStatus } from '@/lib/projects'
 import { formatDate } from '@/lib/utils'
 
 export default function AdminApprovalPage() {

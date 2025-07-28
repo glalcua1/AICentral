@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { X, Upload, Link as LinkIcon, Users, Target, Lightbulb, Image, AlertCircle } from 'lucide-react'
+import { X, Upload, Link as LinkIcon, Users, Target, Lightbulb, Image as ImageIcon, AlertCircle } from 'lucide-react'
 
 interface ProjectSubmissionModalProps {
   isOpen: boolean
@@ -420,7 +420,7 @@ export default function ProjectSubmissionModal({ isOpen, onClose }: ProjectSubmi
             {/* Files & Links */}
             <div className="space-y-4">
               <h3 className="heading-4 text-gray-900 flex items-center">
-                <Image className="w-5 h-5 mr-2 text-primary-600" />
+                <ImageIcon className="w-5 h-5 mr-2 text-primary-600" />
                 Screenshots & Links
               </h3>
               

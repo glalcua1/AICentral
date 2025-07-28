@@ -7,7 +7,6 @@ import { events, Event } from '@/lib/data'
 import { formatDate } from '@/lib/utils'
 
 export default function EventsPage() {
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
   const [registeredEvents, setRegisteredEvents] = useState<number[]>([])
   const [filterType, setFilterType] = useState<string>('all')
 
@@ -82,42 +81,68 @@ END:VCALENDAR`
       <Header />
       
       {/* Hero Section */}
-      <section className="section-lg bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white relative overflow-hidden pt-32">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-          }} />
-        </div>
+      <section className="section-lg text-white relative overflow-hidden pt-32" style={{
+        backgroundImage: 'url("/futuristic-technology-concept.jpg")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}>
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-black/60" />
         
-        <div className="container-custom relative">
+        {/* Subtle gradient overlay for depth */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-transparent to-black/50" />
+        
+        <div className="container-custom relative z-10">
           <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center space-x-2 glass-card mb-8">
+            <div className="inline-flex items-center space-x-2 glass-card mb-8 backdrop-blur-md bg-black/20 border border-white/20">
               <TrendingUp className="w-4 h-4 text-yellow-400" />
-              <span className="text-sm font-medium">Upcoming Events</span>
+              <span className="text-sm font-medium text-white" style={{
+                textShadow: '1px 1px 3px rgba(0,0,0,0.8), 0 0 6px rgba(0,0,0,0.6)'
+              }}>Upcoming Events</span>
             </div>
-            <h1 className="heading-1 mb-6">
+            <h1 className="heading-1 mb-6 text-white" style={{
+              textShadow: '3px 3px 12px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.8), 1px 1px 3px rgba(0,0,0,1)'
+            }}>
               Join Live AI Events & Workshops
             </h1>
-            <p className="text-hero text-primary-100 mb-8">
+            <p className="text-hero mb-8 text-white" style={{
+              textShadow: '2px 2px 8px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.7), 1px 1px 2px rgba(0,0,0,1)'
+            }}>
               Register for interactive sessions, hands-on workshops, and expert-led discussions to accelerate your AI learning journey
             </p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 glass-card max-w-2xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 glass-card max-w-2xl mx-auto backdrop-blur-md bg-black/20 border border-white/10">
               <div className="text-center">
-                <div className="text-2xl font-bold text-white mb-1">{events.length}</div>
-                <div className="text-sm text-primary-200">Events Scheduled</div>
+                <div className="text-2xl font-bold text-white mb-1" style={{
+                  textShadow: '2px 2px 6px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7)'
+                }}>{events.length}</div>
+                <div className="text-sm text-white" style={{
+                  textShadow: '1px 1px 3px rgba(0,0,0,0.8), 0 0 4px rgba(0,0,0,0.6)'
+                }}>Events Scheduled</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-white mb-1">{eventTypes.length}</div>
-                <div className="text-sm text-primary-200">Event Types</div>
+                <div className="text-2xl font-bold text-white mb-1" style={{
+                  textShadow: '2px 2px 6px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7)'
+                }}>{eventTypes.length}</div>
+                <div className="text-sm text-white" style={{
+                  textShadow: '1px 1px 3px rgba(0,0,0,0.8), 0 0 4px rgba(0,0,0,0.6)'
+                }}>Event Types</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-white mb-1">{events.reduce((sum, event) => sum + event.registered, 0)}</div>
-                <div className="text-sm text-primary-200">Total Registrations</div>
+                <div className="text-2xl font-bold text-white mb-1" style={{
+                  textShadow: '2px 2px 6px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7)'
+                }}>{events.reduce((sum, event) => sum + event.registered, 0)}</div>
+                <div className="text-sm text-white" style={{
+                  textShadow: '1px 1px 3px rgba(0,0,0,0.8), 0 0 4px rgba(0,0,0,0.6)'
+                }}>Total Registrations</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-white mb-1">{registeredEvents.length}</div>
-                <div className="text-sm text-primary-200">Your Events</div>
+                <div className="text-2xl font-bold text-white mb-1" style={{
+                  textShadow: '2px 2px 6px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7)'
+                }}>{registeredEvents.length}</div>
+                <div className="text-sm text-white" style={{
+                  textShadow: '1px 1px 3px rgba(0,0,0,0.8), 0 0 4px rgba(0,0,0,0.6)'
+                }}>Your Events</div>
               </div>
             </div>
           </div>
@@ -302,10 +327,10 @@ END:VCALENDAR`
                 <UserCheck className="h-8 w-8 text-primary-600" />
               </div>
               <h3 className="heading-4 mb-4">
-                You're registered for {registeredEvents.length} event{registeredEvents.length !== 1 ? 's' : ''}
+                You&apos;re registered for {registeredEvents.length} event{registeredEvents.length !== 1 ? 's' : ''}
               </h3>
               <p className="text-body mb-6">
-                You'll receive email confirmations and calendar invites for all registered events. 
+                You&apos;ll receive email confirmations and calendar invites for all registered events. 
                 Check your email for joining instructions and event materials.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">

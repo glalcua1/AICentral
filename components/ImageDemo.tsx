@@ -23,9 +23,11 @@ export default function ImageDemo() {
         {/* Regular img tag example */}
         <div>
           <h4 className="text-lg font-medium text-gray-700 mb-3">Circuit Brain</h4>
-          <img
+          <Image
             src="/graphic-digital-brain-human-head-outline-made-from-circuit-board-connecting-blue.jpg"
             alt="Digital Brain Circuit Board"
+            width={400}
+            height={256}
             className="w-full h-64 object-cover rounded-lg"
           />
         </div>

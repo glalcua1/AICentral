@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, Heart, MessageCircle, Tag, Plus, Filter, TrendingUp, ThumbsUp, Share2, BookOpen, Sparkles, ChevronRight } from 'lucide-react'
+import { Search, Heart, MessageCircle, Tag, Plus, Filter, TrendingUp, Share2, BookOpen, Sparkles, ChevronRight } from 'lucide-react'
 import Header from '@/components/Header'
-import { bestPractices, BestPractice } from '@/lib/data'
+import { bestPractices } from '@/lib/data'
 import { formatDate } from '@/lib/utils'
 
 export default function BestPracticesPage() {

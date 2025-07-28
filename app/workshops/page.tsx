@@ -11,7 +11,6 @@ export default function WorkshopsPage() {
   const [selectedLevel, setSelectedLevel] = useState<string>('')
   const [selectedTopic, setSelectedTopic] = useState<string>('')
   const [sortBy, setSortBy] = useState<string>('date')
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [showFilters, setShowFilters] = useState(false)
   const [registeredWorkshops, setRegisteredWorkshops] = useState<number[]>([])
 

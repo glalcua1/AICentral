@@ -78,17 +78,17 @@ export default function VideoHero({
          }, 4000) // 4 seconds timeout
       } else {
         console.log('Video element not found')
-        // Retry finding video element after a brief delay
-        const retryTimer = setTimeout(() => {
-          const retryVideo = document.querySelector('video')
-          if (retryVideo) {
-            initializeVideo()
-          } else {
-            console.log('Video element still not found, using fallback')
-            setVideoError(true)
-            setIsVideoLoaded(true)
-          }
-        }, 500)
+                 // Retry finding video element after a brief delay
+         setTimeout(() => {
+           const retryVideo = document.querySelector('video')
+           if (retryVideo) {
+             initializeVideo()
+           } else {
+             console.log('Video element still not found, using fallback')
+             setVideoError(true)
+             setIsVideoLoaded(true)
+           }
+         }, 500)
       }
     }
 
