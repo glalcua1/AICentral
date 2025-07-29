@@ -159,6 +159,38 @@
     @apply glass rounded-2xl p-6 shadow-large;
   }
 
+  .glass-active {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(99, 102, 241, 0.1) 100%);
+    box-shadow: 
+      0 4px 16px rgba(59, 130, 246, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      0 0 0 1px rgba(59, 130, 246, 0.3);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    position: relative;
+    color: #1e40af !important;
+    font-weight: 500;
+  }
+
+  .glass-active::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.05));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .glass-active:hover::before {
+    opacity: 1;
+  }
+
+  /* Icons in active state */
+  .glass-active svg {
+    color: #1e40af !important;
+  }
+
   /* Hover Effects */
   .hover-glow {
     @apply transition-all duration-300 hover:shadow-glow-lg;

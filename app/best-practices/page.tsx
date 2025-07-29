@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, Heart, MessageCircle, Tag, Plus, Filter, TrendingUp, Share2, BookOpen, Sparkles, ChevronRight } from 'lucide-react'
+import { Search, Heart, MessageCircle, Tag, Plus, Filter, TrendingUp, Share2, BookOpen, Sparkles, ChevronRight, Mail, Globe, GraduationCap, Headphones, Play, Star, Users, ExternalLink } from 'lucide-react'
 import Header from '@/components/Header'
-import { bestPractices } from '@/lib/data'
+import { bestPractices, resources } from '@/lib/data'
 import { formatDate } from '@/lib/utils'
 
 export default function BestPracticesPage() {
@@ -13,6 +13,7 @@ export default function BestPracticesPage() {
   const [sortBy, setSortBy] = useState<string>('date')
   const [showNewPracticeForm, setShowNewPracticeForm] = useState(false)
   const [likedPractices, setLikedPractices] = useState<number[]>([])
+  const [selectedResourceType, setSelectedResourceType] = useState<string>('all')
 
   // Extract unique categories and tags
   const allCategories = Array.from(new Set(bestPractices.map(bp => bp.category)))
@@ -67,6 +68,58 @@ export default function BestPracticesPage() {
       'Monitoring': 'from-orange-500 to-red-500',
     }
     return colors[category as keyof typeof colors] || 'from-gray-500 to-gray-600'
+  }
+
+  // Filter resources by type
+  const filteredResources = selectedResourceType === 'all' 
+    ? resources 
+    : resources.filter(resource => resource.type === selectedResourceType)
+
+  // Get featured resources
+  const featuredResources = resources.filter(resource => resource.featured)
+
+  // Get resource icon by type
+  const getResourceIcon = (type: string) => {
+    switch (type) {
+      case 'newsletter':
+        return <Mail className="w-5 h-5" />
+      case 'blog':
+        return <Globe className="w-5 h-5" />
+      case 'course':
+        return <GraduationCap className="w-5 h-5" />
+      case 'podcast':
+        return <Headphones className="w-5 h-5" />
+      case 'video':
+        return <Play className="w-5 h-5" />
+      case 'tool':
+        return <BookOpen className="w-5 h-5" />
+      case 'paper':
+        return <BookOpen className="w-5 h-5" />
+      default:
+        return <Globe className="w-5 h-5" />
+    }
+  }
+
+  // Get resource type badge color
+  const getResourceTypeBadge = (type: string) => {
+    switch (type) {
+      case 'newsletter':
+        return 'bg-blue-100 text-blue-800'
+      case 'blog':
+        return 'bg-green-100 text-green-800'
+      case 'course':
+        return 'bg-purple-100 text-purple-800'
+      case 'podcast':
+        return 'bg-orange-100 text-orange-800'
+      case 'video':
+        return 'bg-red-100 text-red-800'
+      case 'tool':
+        return 'bg-indigo-100 text-indigo-800'
+      case 'paper':
+        return 'bg-gray-100 text-gray-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
+    }
   }
 
   return (
@@ -327,6 +380,236 @@ export default function BestPracticesPage() {
                   </div>
                 )
               })}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* AI Resources Section */}
+      <section className="section bg-white">
+        <div className="container-custom">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-700 px-4 py-2 rounded-full mb-6">
+              <BookOpen className="w-4 h-4" />
+              <span className="text-sm font-medium">Curated Resources</span>
+            </div>
+            <h2 className="heading-2 mb-4">Essential AI Resources</h2>
+            <p className="text-body text-gray-600 max-w-3xl mx-auto">
+              Stay updated with the latest AI developments through our carefully curated collection of newsletters, 
+              tools, courses, and expert insights from the global AI community.
+            </p>
+          </div>
+
+          {/* Resource Type Filter */}
+          <div className="flex flex-wrap justify-center gap-3 mb-12">
+            {[
+              { key: 'all', label: 'All Resources', icon: <Globe className="w-4 h-4" /> },
+              { key: 'newsletter', label: 'Newsletters', icon: <Mail className="w-4 h-4" /> },
+              { key: 'tool', label: 'Tools & Platforms', icon: <BookOpen className="w-4 h-4" /> },
+              { key: 'course', label: 'Courses', icon: <GraduationCap className="w-4 h-4" /> },
+              { key: 'blog', label: 'Blogs & Articles', icon: <Globe className="w-4 h-4" /> },
+              { key: 'podcast', label: 'Podcasts', icon: <Headphones className="w-4 h-4" /> },
+              { key: 'video', label: 'Videos', icon: <Play className="w-4 h-4" /> },
+            ].map((filter) => (
+              <button
+                key={filter.key}
+                onClick={() => setSelectedResourceType(filter.key)}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  selectedResourceType === filter.key
+                    ? 'bg-primary-600 text-white shadow-lg'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {filter.icon}
+                <span>{filter.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Featured Resources (only show when 'all' is selected) */}
+          {selectedResourceType === 'all' && (
+            <div className="mb-16">
+              <h3 className="heading-4 mb-8 text-center">
+                <span className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                  Featured Resources
+                </span>
+              </h3>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {featuredResources.slice(0, 6).map((resource) => (
+                  <div key={resource.id} className="card card-hover group">
+                    <div className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className={`p-3 rounded-xl ${getResourceTypeBadge(resource.type)} bg-opacity-20`}>
+                          {getResourceIcon(resource.type)}
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                          <span className="text-sm font-medium text-gray-600">
+                            {resource.rating}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="mb-4">
+                        <div className={`inline-flex px-3 py-1 rounded-full text-xs font-medium mb-3 ${getResourceTypeBadge(resource.type)}`}>
+                          {resource.type.charAt(0).toUpperCase() + resource.type.slice(1)}
+                        </div>
+                        <h4 className="font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+                          {resource.title}
+                        </h4>
+                        <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                          {resource.description}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center text-xs text-gray-500">
+                          {resource.organization && (
+                            <span className="font-medium">{resource.organization}</span>
+                          )}
+                          {resource.author && (
+                            <span className="font-medium">{resource.author}</span>
+                          )}
+                          {resource.subscribers && (
+                            <div className="flex items-center space-x-1 ml-3">
+                              <Users className="w-3 h-3" />
+                              <span>{(resource.subscribers / 1000).toFixed(0)}k subscribers</span>
+                            </div>
+                          )}
+                        </div>
+                        <a
+                          href={resource.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary-600 hover:text-primary-700 transition-colors"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* All Resources Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredResources.map((resource) => (
+              <div key={resource.id} className="card card-hover group">
+                <div className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className={`p-3 rounded-xl ${getResourceTypeBadge(resource.type)} bg-opacity-20`}>
+                      {getResourceIcon(resource.type)}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      {resource.featured && (
+                        <div className="flex items-center space-x-1 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
+                          <Star className="w-3 h-3 fill-current" />
+                          <span>Featured</span>
+                        </div>
+                      )}
+                      {resource.rating && (
+                        <div className="flex items-center space-x-1">
+                          <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                          <span className="text-sm font-medium text-gray-600">
+                            {resource.rating}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="mb-4">
+                    <div className={`inline-flex px-3 py-1 rounded-full text-xs font-medium mb-3 ${getResourceTypeBadge(resource.type)}`}>
+                      {resource.type.charAt(0).toUpperCase() + resource.type.slice(1)}
+                      {resource.frequency && ` • ${resource.frequency}`}
+                    </div>
+                    <h4 className="font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+                      {resource.title}
+                    </h4>
+                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                      {resource.description}
+                    </p>
+                  </div>
+
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-1 mb-4">
+                    {resource.tags.slice(0, 3).map((tag) => (
+                      <span key={tag} className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md">
+                        {tag}
+                      </span>
+                    ))}
+                    {resource.tags.length > 3 && (
+                      <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md">
+                        +{resource.tags.length - 3}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center text-xs text-gray-500">
+                      {resource.organization && (
+                        <span className="font-medium">{resource.organization}</span>
+                      )}
+                      {resource.author && !resource.organization && (
+                        <span className="font-medium">{resource.author}</span>
+                      )}
+                      {resource.subscribers && (
+                        <div className="flex items-center space-x-1 ml-3">
+                          <Users className="w-3 h-3" />
+                          <span>{(resource.subscribers / 1000).toFixed(0)}k subscribers</span>
+                        </div>
+                      )}
+                    </div>
+                    <a
+                      href={resource.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center space-x-1 text-primary-600 hover:text-primary-700 transition-colors text-sm font-medium"
+                    >
+                      <span>Visit</span>
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Newsletter Spotlight */}
+          {selectedResourceType === 'newsletter' && (
+            <div className="mt-16 p-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
+              <div className="text-center">
+                <div className="inline-flex items-center space-x-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full mb-6">
+                  <Mail className="w-4 h-4" />
+                  <span className="text-sm font-medium">Stay Informed</span>
+                </div>
+                <h3 className="heading-4 mb-4">Never Miss an AI Breakthrough</h3>
+                <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                  Subscribe to these top-rated newsletters to stay ahead of the curve in artificial intelligence and machine learning.
+                </p>
+                <div className="grid md:grid-cols-3 gap-4">
+                  {resources.filter(r => r.type === 'newsletter' && r.featured).map((newsletter) => (
+                    <div key={newsletter.id} className="bg-white rounded-xl p-6 shadow-sm border">
+                      <div className="text-center">
+                        <Mail className="w-8 h-8 text-blue-600 mx-auto mb-3" />
+                        <h4 className="font-semibold text-gray-900 mb-2">{newsletter.title}</h4>
+                        <p className="text-sm text-gray-600 mb-4">{newsletter.frequency}</p>
+                        <a
+                          href={newsletter.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn-primary btn-small w-full"
+                        >
+                          Subscribe
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
         </div>

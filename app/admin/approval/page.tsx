@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Clock, CheckCircle, XCircle, Eye, ExternalLink, MessageSquare, User, Calendar, DollarSign, Code, Target, Users, Lightbulb, TrendingUp } from 'lucide-react'
 import Header from '@/components/Header'
 import { Project, getProjectsByStatus } from '@/lib/projects'
@@ -10,8 +10,17 @@ export default function AdminApprovalPage() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [reviewComment, setReviewComment] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [currentUser, setCurrentUser] = useState<{name: string, email: string, role: 'user' | 'approver'} | null>(null)
   
   const pendingProjects = getProjectsByStatus('pending')
+
+  // Check for stored authentication on mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem('currentUser')
+    if (storedUser) {
+      setCurrentUser(JSON.parse(storedUser))
+    }
+  }, [])
   
   const handleApprove = async (project: Project) => {
     setIsSubmitting(true)
@@ -36,6 +45,25 @@ export default function AdminApprovalPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
+      
+      {/* Access Control Check */}
+      {currentUser && currentUser.role !== 'approver' && (
+        <div className="section bg-yellow-50 border-b border-yellow-200">
+          <div className="container-custom">
+            <div className="flex items-center justify-center p-4 bg-yellow-100 rounded-xl border border-yellow-300">
+              <div className="flex items-center space-x-3">
+                <User className="w-5 h-5 text-yellow-700" />
+                <div>
+                  <p className="text-sm font-semibold text-yellow-800">Access Notice</p>
+                  <p className="text-xs text-yellow-700">
+                    You&apos;re logged in as a regular user. Use an approver account (admin@, approver@, hr@) to access approval features.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Hero Section */}
       <section className="section-lg bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white relative overflow-hidden pt-32">

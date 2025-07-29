@@ -1,23 +1,42 @@
 'use client'
 
-import { useState } from 'react'
-import { Clock, CheckCircle, XCircle, Eye, Heart, ExternalLink, Edit3, Trash2, AlertCircle } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Clock, CheckCircle, XCircle, Eye, Heart, ExternalLink, Edit3, Trash2, AlertCircle, User, Calendar, MessageSquare, Target, Users, Lightbulb, TrendingUp, Code } from 'lucide-react'
 import Header from '@/components/Header'
-import { projects, Project } from '@/lib/projects'
+import ProjectSubmissionModal from '@/components/ProjectSubmissionModal'
+import { projects, Project, getProjectsByStatus } from '@/lib/projects'
 import { formatDate } from '@/lib/utils'
 
 export default function MyProjectsPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>('all')
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingProject, setEditingProject] = useState<Project | undefined>(undefined)
+  const [currentUser, setCurrentUser] = useState<{name: string, email: string, role: 'user' | 'approver'} | null>(null)
+  const [selectedProjectForReview, setSelectedProjectForReview] = useState<Project | null>(null)
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
+  const [reviewComment, setReviewComment] = useState('')
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false)
+  
+  // Check for stored authentication on mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem('currentUser')
+    if (storedUser) {
+      setCurrentUser(JSON.parse(storedUser))
+    }
+  }, [])
   
   // Simulate current user (in real app, this would come from auth)
   const currentUserEmail = "jennifer.kim@company.com"
   
-  // Filter projects by current user
-  const userProjects = projects.filter(project => project.submittedBy === currentUserEmail)
+  // Determine what projects to show based on user role
+  const isApprover = currentUser?.role === 'approver'
+  const displayProjects = isApprover 
+    ? getProjectsByStatus('pending') // Show pending projects for approvers
+    : projects.filter(project => project.submittedBy === currentUserEmail) // Show user's own projects
   
   const filteredProjects = selectedStatus === 'all' 
-    ? userProjects 
-    : userProjects.filter(project => project.status === selectedStatus)
+    ? displayProjects 
+    : displayProjects.filter(project => project.status === selectedStatus)
 
   const getStatusIcon = (status: Project['status']) => {
     switch (status) {
@@ -46,10 +65,56 @@ export default function MyProjectsPage() {
   }
 
   const statusCounts = {
-    all: userProjects.length,
-    pending: userProjects.filter(p => p.status === 'pending').length,
-    approved: userProjects.filter(p => p.status === 'approved').length,
-    rejected: userProjects.filter(p => p.status === 'rejected').length,
+    all: displayProjects.length,
+    pending: displayProjects.filter(p => p.status === 'pending').length,
+    approved: displayProjects.filter(p => p.status === 'approved').length,
+    rejected: displayProjects.filter(p => p.status === 'rejected').length,
+  }
+
+  const handleEditProject = (project: Project) => {
+    setEditingProject(project)
+    setIsModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+    setEditingProject(undefined)
+  }
+
+  const handleNewProject = () => {
+    setEditingProject(undefined)
+    setIsModalOpen(true)
+  }
+
+  const handleViewDetails = (project: Project) => {
+    setSelectedProjectForReview(project)
+    setIsReviewModalOpen(true)
+  }
+
+  const handleCloseReviewModal = () => {
+    setIsReviewModalOpen(false)
+    setSelectedProjectForReview(null)
+    setReviewComment('')
+  }
+
+  const handleApprove = async (project: Project) => {
+    setIsSubmittingReview(true)
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    console.log('Approved project:', project.id, 'Comment:', reviewComment)
+    alert(`Project "${project.projectName}" has been approved!`)
+    setIsSubmittingReview(false)
+    handleCloseReviewModal()
+  }
+
+  const handleReject = async (project: Project) => {
+    setIsSubmittingReview(true)
+    // Simulate API call  
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    console.log('Rejected project:', project.id, 'Comment:', reviewComment)
+    alert(`Project "${project.projectName}" has been rejected. The submitter will be notified.`)
+    setIsSubmittingReview(false)
+    handleCloseReviewModal()
   }
 
   return (
@@ -69,12 +134,18 @@ export default function MyProjectsPage() {
           <div className="text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center space-x-2 glass-card mb-8">
               <Edit3 className="w-4 h-4 text-yellow-400" />
-              <span className="text-sm font-medium">Project Portfolio</span>
+              <span className="text-sm font-medium">
+                {isApprover ? 'Admin Panel' : 'Project Portfolio'}
+              </span>
             </div>
             
-            <h1 className="heading-1 mb-6">My AI Projects</h1>
+            <h1 className="heading-1 mb-6">
+              {isApprover ? 'Project Approval Dashboard' : 'My AI Projects'}
+            </h1>
             <p className="text-hero mb-8 text-gray-200">
-              Track your project submissions, view approval status, and manage your AI innovation portfolio
+              {isApprover 
+                ? 'Review and approve AI project submissions from the community'
+                : 'Track your project submissions, view approval status, and manage your AI innovation portfolio'}
             </p>
 
             {/* Quick Stats */}
@@ -102,12 +173,15 @@ export default function MyProjectsPage() {
       <section className="section bg-white border-b border-gray-200">
         <div className="container-custom">
           <div className="flex flex-wrap gap-2">
-            {[
+            {(isApprover ? [
+              { key: 'all', label: 'All Pending', count: statusCounts.all },
+              { key: 'pending', label: 'Awaiting Review', count: statusCounts.pending },
+            ] : [
               { key: 'all', label: 'All Projects', count: statusCounts.all },
               { key: 'pending', label: 'Pending Review', count: statusCounts.pending },
               { key: 'approved', label: 'Approved', count: statusCounts.approved },
               { key: 'rejected', label: 'Needs Revision', count: statusCounts.rejected },
-            ].map((filter) => (
+            ]).map((filter) => (
               <button
                 key={filter.key}
                 onClick={() => setSelectedStatus(filter.key)}
@@ -149,13 +223,42 @@ export default function MyProjectsPage() {
                       </div>
                       
                       <div className="flex items-center space-x-2 ml-6">
-                        <button className="btn-ghost btn-small">
-                          <Edit3 className="w-4 h-4 mr-2" />
-                          Edit
-                        </button>
-                        <button className="btn-ghost btn-small text-red-600 hover:bg-red-50">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {isApprover ? (
+                          // Approver actions
+                          <>
+                            <button 
+                              onClick={() => handleViewDetails(project)}
+                              className="btn-ghost btn-small"
+                            >
+                              <Eye className="w-4 h-4 mr-2" />
+                              View Details
+                            </button>
+                            <button 
+                              onClick={() => {
+                                setSelectedProjectForReview(project)
+                                setIsReviewModalOpen(true)
+                              }}
+                              className="btn btn-small bg-green-600 text-white hover:bg-green-700"
+                            >
+                              <CheckCircle className="w-4 h-4 mr-2" />
+                              Review
+                            </button>
+                          </>
+                        ) : (
+                          // User actions (existing)
+                          <>
+                            <button 
+                              onClick={() => handleEditProject(project)}
+                              className="btn-ghost btn-small"
+                            >
+                              <Edit3 className="w-4 h-4 mr-2" />
+                              Edit
+                            </button>
+                            <button className="btn-ghost btn-small text-red-600 hover:bg-red-50">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </>
+                        )}
                       </div>
                     </div>
 
@@ -270,19 +373,212 @@ export default function MyProjectsPage() {
               <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Edit3 className="w-12 h-12 text-gray-400" />
               </div>
-              <h3 className="heading-4 mb-4">No projects found</h3>
+              <h3 className="heading-4 mb-4">
+                {isApprover ? 'No pending projects' : 'No projects found'}
+              </h3>
               <p className="text-body text-gray-600 mb-8 max-w-md mx-auto">
-                {selectedStatus === 'all' 
-                  ? "You haven't submitted any projects yet. Start by sharing your AI innovations with the community!"
-                  : `No projects with status "${selectedStatus}" found.`}
+                {isApprover 
+                  ? 'All projects have been reviewed! Check back later for new submissions.'
+                  : selectedStatus === 'all' 
+                    ? "You haven't submitted any projects yet. Start by sharing your AI innovations with the community!"
+                    : `No projects with status "${selectedStatus}" found.`}
               </p>
-              <button className="btn-primary">
-                Submit New Project
-              </button>
+              {!isApprover && (
+                <button onClick={handleNewProject} className="btn-primary">
+                  Submit New Project
+                </button>
+              )}
             </div>
           )}
         </div>
       </section>
+
+      {/* Project Submission Modal */}
+      <ProjectSubmissionModal 
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        project={editingProject}
+      />
+
+      {/* Project Review Modal for Approvers */}
+      {isReviewModalOpen && selectedProjectForReview && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-8">
+              {/* Header */}
+              <div className="flex items-start justify-between mb-6">
+                <div>
+                  <h2 className="heading-3 mb-2">{selectedProjectForReview.projectName}</h2>
+                  <div className="flex items-center space-x-4 text-sm text-gray-500">
+                    <div className="flex items-center space-x-1">
+                      <User className="w-4 h-4" />
+                      <span>Submitted by {selectedProjectForReview.submittedBy}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>{formatDate(selectedProjectForReview.submittedAt)}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <button
+                  onClick={handleCloseReviewModal}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <XCircle className="w-6 h-6" />
+                </button>
+              </div>
+
+              {/* Project Details Grid */}
+              <div className="grid md:grid-cols-2 gap-6 mb-8">
+                {/* Description */}
+                <div className="md:col-span-2">
+                  <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                    <Lightbulb className="w-4 h-4 mr-2 text-primary-600" />
+                    Project Description
+                  </h3>
+                  <p className="text-gray-700">{selectedProjectForReview.description}</p>
+                </div>
+
+                {/* Objective */}
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                    <Target className="w-4 h-4 mr-2 text-primary-600" />
+                    Objective
+                  </h3>
+                  <p className="text-gray-700">{selectedProjectForReview.objective}</p>
+                </div>
+
+                {/* Impact */}
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                    <TrendingUp className="w-4 h-4 mr-2 text-primary-600" />
+                    Expected Impact
+                  </h3>
+                  <p className="text-gray-700">{selectedProjectForReview.impact}</p>
+                </div>
+
+                {/* Team */}
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                    <Users className="w-4 h-4 mr-2 text-primary-600" />
+                    Team Members
+                  </h3>
+                  <p className="text-gray-700">{selectedProjectForReview.team}</p>
+                </div>
+
+                {/* Timeline & Budget */}
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                    <Calendar className="w-4 h-4 mr-2 text-primary-600" />
+                    Timeline & Budget
+                  </h3>
+                  <div className="space-y-1 text-gray-700">
+                    {selectedProjectForReview.timeline && (
+                      <p><span className="font-medium">Timeline:</span> {selectedProjectForReview.timeline}</p>
+                    )}
+                    {selectedProjectForReview.budget && (
+                      <p><span className="font-medium">Budget:</span> {selectedProjectForReview.budget}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Technologies */}
+                {selectedProjectForReview.technologies && (
+                  <div className="md:col-span-2">
+                    <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                      <Code className="w-4 h-4 mr-2 text-primary-600" />
+                      Technologies
+                    </h3>
+                    <p className="text-gray-700">{selectedProjectForReview.technologies}</p>
+                  </div>
+                )}
+
+                {/* Project Link */}
+                {selectedProjectForReview.link && (
+                  <div className="md:col-span-2">
+                    <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                      <ExternalLink className="w-4 h-4 mr-2 text-primary-600" />
+                      Project Link
+                    </h3>
+                    <a
+                      href={selectedProjectForReview.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary-600 hover:text-primary-700 underline"
+                    >
+                      {selectedProjectForReview.link}
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {/* Review Comment Section */}
+              <div className="mb-6">
+                <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                  <MessageSquare className="w-4 h-4 mr-2 text-primary-600" />
+                  Review Comments
+                </h3>
+                <textarea
+                  value={reviewComment}
+                  onChange={(e) => setReviewComment(e.target.value)}
+                  placeholder="Add your review comments here..."
+                  className="w-full h-32 p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                  required
+                />
+                <p className="text-sm text-gray-500 mt-2">
+                  Comments are required and will be shared with the project submitter.
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                <button
+                  onClick={handleCloseReviewModal}
+                  className="btn-secondary"
+                  disabled={isSubmittingReview}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleReject(selectedProjectForReview)}
+                  disabled={isSubmittingReview || !reviewComment.trim()}
+                  className="btn bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
+                >
+                  {isSubmittingReview ? (
+                    <div className="flex items-center">
+                      <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin mr-2" />
+                      Processing...
+                    </div>
+                  ) : (
+                    <>
+                      <XCircle className="w-4 h-4 mr-2" />
+                      Request Revision
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={() => handleApprove(selectedProjectForReview)}
+                  disabled={isSubmittingReview || !reviewComment.trim()}
+                  className="btn-primary disabled:opacity-50"
+                >
+                  {isSubmittingReview ? (
+                    <div className="flex items-center">
+                      <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin mr-2" />
+                      Processing...
+                    </div>
+                  ) : (
+                    <>
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Approve Project
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 } 

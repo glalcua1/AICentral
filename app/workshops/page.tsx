@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { Search, Filter, Calendar, Clock, Users, Star, Play, Download, ChevronDown, CheckCircle, X } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Search, Filter, Calendar, Clock, Users, Star, Play, Download, ChevronDown, CheckCircle, X, Plus, BookOpen, MapPin, DollarSign, Tag, FileText, User } from 'lucide-react'
 import Header from '@/components/Header'
 import { workshops, Workshop } from '@/lib/data'
 import { formatDate } from '@/lib/utils'
@@ -13,6 +13,8 @@ export default function WorkshopsPage() {
   const [sortBy, setSortBy] = useState<string>('date')
   const [showFilters, setShowFilters] = useState(false)
   const [registeredWorkshops, setRegisteredWorkshops] = useState<number[]>([])
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [eventType, setEventType] = useState<'workshop' | 'event'>('workshop')
 
   // Extract unique topics and levels
   const allTopics = Array.from(new Set(workshops.flatMap(w => w.topics)))
@@ -58,6 +60,34 @@ export default function WorkshopsPage() {
   const handleAddToCalendar = (workshop: Workshop) => {
     alert(`Adding "${workshop.title}" to calendar - This would integrate with Outlook/Google Calendar`)
   }
+
+  const openAddModal = (type: 'workshop' | 'event') => {
+    setEventType(type)
+    setIsAddModalOpen(true)
+  }
+
+  const closeAddModal = () => {
+    setIsAddModalOpen(false)
+  }
+
+  // Handle ESC key to close modal
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        closeAddModal()
+      }
+    }
+
+    if (isAddModalOpen) {
+      document.addEventListener('keydown', handleEscKey)
+      document.body.style.overflow = 'hidden'
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscKey)
+      document.body.style.overflow = 'unset'
+    }
+  }, [isAddModalOpen])
 
   const getLevelColor = (level: string) => {
     switch (level) {
@@ -171,6 +201,26 @@ export default function WorkshopsPage() {
                 <div className="text-sm text-gray-600">
                   {sortedWorkshops.length} of {workshops.length} workshops
                 </div>
+                
+                {/* Add Workshop/Event Button */}
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => openAddModal('workshop')}
+                    className="btn-primary btn-small flex items-center space-x-2 group"
+                  >
+                    <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                    <span>Add Workshop</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => openAddModal('event')}
+                    className="btn-secondary btn-small flex items-center space-x-2 group"
+                  >
+                    <Calendar className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                    <span>Add Event</span>
+                  </button>
+                </div>
+                
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
@@ -373,6 +423,318 @@ export default function WorkshopsPage() {
           )}
         </div>
       </section>
+
+      {/* Add Workshop/Event Modal */}
+      {isAddModalOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/60 backdrop-blur-lg"
+            onClick={closeAddModal}
+          />
+          
+          {/* Modal */}
+          <div className="flex min-h-full items-center justify-center p-4">
+            <div className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl max-h-[95vh] overflow-hidden">
+              
+              {/* Header */}
+              <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-8 py-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center">
+                      {eventType === 'workshop' ? (
+                        <BookOpen className="w-6 h-6 text-white" />
+                      ) : (
+                        <Calendar className="w-6 h-6 text-white" />
+                      )}
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-white">
+                        Add New {eventType === 'workshop' ? 'Workshop' : 'Event'}
+                      </h2>
+                      <p className="text-primary-100">
+                        Create a new {eventType} for the AI learning community
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={closeAddModal}
+                    className="p-3 bg-white/20 backdrop-blur-md hover:bg-white/30 rounded-full transition-all duration-300 group"
+                  >
+                    <X className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Form Content */}
+              <div className="overflow-y-auto max-h-[calc(95vh-120px)]">
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    const formData = new FormData(e.currentTarget)
+                    const data = Object.fromEntries(formData.entries())
+                    console.log('Submitted data:', data)
+                    alert(`${eventType === 'workshop' ? 'Workshop' : 'Event'} added successfully! (This is a demo - would integrate with your backend)`)
+                    closeAddModal()
+                  }}
+                  className="p-8 space-y-8"
+                >
+                  {/* Basic Information */}
+                  <div className="bg-gray-50 rounded-2xl p-6">
+                    <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                      <div className="w-2 h-8 bg-gradient-to-b from-primary-500 to-primary-600 rounded-full mr-3"></div>
+                      Basic Information
+                    </h3>
+                    
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          <FileText className="w-4 h-4 inline mr-2" />
+                          Title *
+                        </label>
+                        <input
+                          type="text"
+                          name="title"
+                          required
+                          placeholder={`Enter ${eventType} title`}
+                          className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          <User className="w-4 h-4 inline mr-2" />
+                          Facilitator *
+                        </label>
+                        <input
+                          type="text"
+                          name="facilitator"
+                          required
+                          placeholder="Facilitator name"
+                          className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mt-6">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        <FileText className="w-4 h-4 inline mr-2" />
+                        Description *
+                      </label>
+                      <textarea
+                        name="description"
+                        required
+                        rows={4}
+                        placeholder={`Describe what participants will learn in this ${eventType}`}
+                        className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all resize-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Schedule & Location */}
+                  <div className="bg-blue-50 rounded-2xl p-6">
+                    <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                      <div className="w-2 h-8 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full mr-3"></div>
+                      Schedule & Location
+                    </h3>
+                    
+                    <div className="grid md:grid-cols-3 gap-6">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          <Calendar className="w-4 h-4 inline mr-2" />
+                          Date *
+                        </label>
+                        <input
+                          type="date"
+                          name="date"
+                          required
+                          min={new Date().toISOString().split('T')[0]}
+                          className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          <Clock className="w-4 h-4 inline mr-2" />
+                          Duration *
+                        </label>
+                        <select
+                          name="duration"
+                          required
+                          className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        >
+                          <option value="">Select duration</option>
+                          <option value="1 hour">1 hour</option>
+                          <option value="1.5 hours">1.5 hours</option>
+                          <option value="2 hours">2 hours</option>
+                          <option value="3 hours">3 hours</option>
+                          <option value="4 hours">4 hours</option>
+                          <option value="Full day">Full day</option>
+                        </select>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          <MapPin className="w-4 h-4 inline mr-2" />
+                          Location *
+                        </label>
+                        <select
+                          name="location"
+                          required
+                          className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        >
+                          <option value="">Select location</option>
+                          <option value="Conference Room A">Conference Room A</option>
+                          <option value="Conference Room B">Conference Room B</option>
+                          <option value="Training Room 1">Training Room 1</option>
+                          <option value="Training Room 2">Training Room 2</option>
+                          <option value="Virtual">Virtual</option>
+                          <option value="Hybrid">Hybrid</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Workshop Specific Fields */}
+                  {eventType === 'workshop' && (
+                    <div className="bg-green-50 rounded-2xl p-6">
+                      <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                        <div className="w-2 h-8 bg-gradient-to-b from-green-500 to-green-600 rounded-full mr-3"></div>
+                        Workshop Details
+                      </h3>
+                      
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">
+                            <Tag className="w-4 h-4 inline mr-2" />
+                            Level *
+                          </label>
+                          <select
+                            name="level"
+                            required
+                            className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                          >
+                            <option value="">Select level</option>
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
+                            <option value="All Levels">All Levels</option>
+                          </select>
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">
+                            <Users className="w-4 h-4 inline mr-2" />
+                            Max Participants
+                          </label>
+                          <input
+                            type="number"
+                            name="maxParticipants"
+                            min="1"
+                            max="100"
+                            placeholder="e.g. 25"
+                            className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="mt-6">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          <BookOpen className="w-4 h-4 inline mr-2" />
+                          Topics (comma-separated)
+                        </label>
+                        <input
+                          type="text"
+                          name="topics"
+                          placeholder="e.g. Machine Learning, Neural Networks, Python"
+                          className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Additional Information */}
+                  <div className="bg-purple-50 rounded-2xl p-6">
+                    <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                      <div className="w-2 h-8 bg-gradient-to-b from-purple-500 to-purple-600 rounded-full mr-3"></div>
+                      Additional Information
+                    </h3>
+                    
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          <DollarSign className="w-4 h-4 inline mr-2" />
+                          Cost
+                        </label>
+                        <select
+                          name="cost"
+                          className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                        >
+                          <option value="Free">Free</option>
+                          <option value="$50">$50</option>
+                          <option value="$100">$100</option>
+                          <option value="$150">$150</option>
+                          <option value="$200">$200</option>
+                          <option value="Custom">Custom Amount</option>
+                        </select>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          <Tag className="w-4 h-4 inline mr-2" />
+                          Category
+                        </label>
+                        <select
+                          name="category"
+                          className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                        >
+                          <option value="">Select category</option>
+                          <option value="Fundamentals">Fundamentals</option>
+                          <option value="Advanced">Advanced</option>
+                          <option value="Ethics">Ethics</option>
+                          <option value="Practical">Practical</option>
+                          <option value="Industry">Industry Specific</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="mt-6">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        <FileText className="w-4 h-4 inline mr-2" />
+                        Prerequisites
+                      </label>
+                      <textarea
+                        name="prerequisites"
+                        rows={3}
+                        placeholder="List any prerequisites or recommended background knowledge"
+                        className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Form Actions */}
+                  <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                    <button
+                      type="button"
+                      onClick={closeAddModal}
+                      className="px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl font-semibold transition-all duration-300"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-8 py-3 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/25 flex items-center space-x-2"
+                    >
+                      <Plus className="w-5 h-5" />
+                      <span>Create {eventType === 'workshop' ? 'Workshop' : 'Event'}</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 } 
