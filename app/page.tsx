@@ -17,7 +17,7 @@ export default function Home() {
       id: 1,
       title: "Introduction to Machine Learning",
       facilitator: "Dr. Sarah Chen",
-      date: "2025-02-15",
+      date: "2024-01-15",
       duration: "2 hours",
       level: "Beginner",
       participants: 45,
@@ -28,7 +28,7 @@ export default function Home() {
       id: 2,
       title: "Deep Learning Fundamentals",
       facilitator: "Prof. Michael Rodriguez",
-      date: "2025-02-20",
+      date: "2024-01-20",
       duration: "3 hours",
       level: "Intermediate",
       participants: 32,
@@ -39,7 +39,7 @@ export default function Home() {
       id: 3,
       title: "AI Ethics and Bias",
       facilitator: "Dr. Emily Watson",
-      date: "2025-02-25",
+      date: "2024-01-25",
       duration: "1.5 hours",
       level: "All Levels",
       participants: 67,
@@ -52,7 +52,7 @@ export default function Home() {
     {
       id: 1,
       title: "Natural Language Processing Workshop",
-      date: "2025-03-05",
+      date: "2024-02-05",
       time: "14:00",
       facilitator: "Dr. James Liu",
       location: "Conference Room A",
@@ -61,7 +61,7 @@ export default function Home() {
     {
       id: 2,
       title: "Computer Vision Applications",
-      date: "2025-03-10",
+      date: "2024-02-10",
       time: "10:00",
       facilitator: "Sarah Johnson",
       location: "Virtual",
@@ -94,10 +94,10 @@ export default function Home() {
   ]
 
   const achievements = [
-    { icon: Award, label: "AI Projects Deployed", value: "89+" },
-    { icon: Target, label: "Completion Rate", value: "92%" },
-    { icon: TrendingUp, label: "Active This Month", value: "1.2K+" },
-    { icon: Zap, label: "New Skills Gained", value: "4.7K+" }
+    { icon: Award, label: "Excellence Award", value: "2023" },
+    { icon: Target, label: "Success Rate", value: "94%" },
+    { icon: TrendingUp, label: "Growth", value: "+127%" },
+    { icon: Zap, label: "Avg Response", value: "< 24h" }
   ]
 
   const handleEventRegister = (eventId: number) => {
